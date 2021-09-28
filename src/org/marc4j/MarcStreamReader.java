@@ -45,7 +45,7 @@ import org.marc4j.marc.impl.Verifier;
  * An iterator over a collection of MARC records in ISO 2709 format.
  * <p>
  * Example usage:
- * 
+ *
  * <pre>
  * InputStream input = new FileInputStream(&quot;file.mrc&quot;);
  * MarcReader reader = new MarcStreamReader(input);
@@ -54,21 +54,21 @@ import org.marc4j.marc.impl.Verifier;
  *     // Process record
  * }
  * </pre>
- * 
+ *
  * <p>
  * Check the {@link org.marc4j.marc}&nbsp;package for examples about the use of
  * the {@link org.marc4j.marc.Record}&nbsp;object model.
  * </p>
- * 
+ *
  * <p>
  * When no encoding is given as an constructor argument the parser tries to
  * resolve the encoding by looking at the character coding scheme (leader
  * position 9) in MARC21 records. For UNIMARC records this position is not
  * defined.
  * </p>
- * 
+ *
  * @author Bas Peters
- * 
+ *
  */
 public class MarcStreamReader implements MarcReader {
 
@@ -140,6 +140,9 @@ public class MarcStreamReader implements MarcReader {
             input.readFully(byteArray);
 
             final int recordLength = parseRecordLength(byteArray);
+            // 加1 是为了加上marc结尾的\0x001D 结束符，，有些marc头的长度信息好像是不包含最后一个结束符的
+//            final int recordLength = parseRecordLength(byteArray) + 1;
+//            final int recordLength = input.available() + 24;
             final byte[] recordBuf = new byte[recordLength - 24];
             input.readFully(recordBuf);
             parseRecord(record, byteArray, recordBuf, recordLength);
@@ -258,9 +261,9 @@ public class MarcStreamReader implements MarcReader {
                 }
             }
 
-            if (inputrec.read() != Constants.RT) {
-                throw new MarcException("expected record terminator");
-            }
+//            if (inputrec.read() != Constants.RT) {
+//                throw new MarcException("expected record terminator");
+//            }
         } catch (final IOException e) {
             throw new MarcException("an error occured reading input", e);
         }
